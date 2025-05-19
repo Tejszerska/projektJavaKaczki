@@ -21,10 +21,7 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         setBackground(Color.CYAN);
         addMouseMotionListener(this);
 
-        for (int i = 0; i < 5; i++) // dodanie kaczek na tą chwile 5
-        {
-            kaczki.add(new Kaczka());
-        }
+
 
         celownik = new Celownik(0,0); // tworzymy celownik i podajemy pola do konstruktora
 
@@ -68,7 +65,14 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank cursor");
         setCursor(blankCursor);
     }
-
+public void reset(){
+    wynik = 0;
+    kaczki.clear();
+    for (int i = 0; i < 5; i++) // dodanie kaczek na tą chwile 5
+    {
+        kaczki.add(new Kaczka());
+    }
+}
     @Override
     protected void paintComponent(Graphics g) { // kolorowanie kaczek i celownika
         super.paintComponent(g);

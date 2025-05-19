@@ -11,7 +11,7 @@ public class PanelKoniec extends JPanel {
 
         JLabel koniec = new JLabel("Koniec Gry!");
         koniec.setFont(new Font("Arial", Font.BOLD, 36));
-        koniec.setForeground(Color.WHITE); // lepiej widoczny tekst
+        koniec.setForeground(Color.WHITE);
         koniec.setBounds(250, 100, 300, 50);
         koniec.setHorizontalAlignment(SwingConstants.CENTER);
         add(koniec);
@@ -19,7 +19,7 @@ public class PanelKoniec extends JPanel {
         JButton zagrajPonownie = new JButton("Zagraj ponownie");
         zagrajPonownie.setFont(new Font("Arial", Font.PLAIN, 24));
         zagrajPonownie.setBounds(275, 200, 250, 50);
-        zagrajPonownie.addActionListener(e -> okno.pokazPanel("menu"));
+        zagrajPonownie.addActionListener(e -> okno.rozpocznijNowaGre());
         add(zagrajPonownie);
     }
 

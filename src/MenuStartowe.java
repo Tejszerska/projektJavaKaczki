@@ -15,7 +15,7 @@ public class MenuStartowe extends JPanel {
         JButton start = new JButton("Start Gry");
         start.setFont(new Font("Arial", Font.BOLD, 24));
         start.setBounds(300, 200, 200, 50);
-        start.addActionListener(e -> okno.pokazPanel("gra"));
+        start.addActionListener(e -> okno.rozpocznijNowaGre());
         add(start);
 
         // pokaz wyniki
