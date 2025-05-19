@@ -21,6 +21,13 @@ public class PanelKoniec extends JPanel {
         zagrajPonownie.setBounds(275, 200, 250, 50);
         zagrajPonownie.addActionListener(e -> okno.rozpocznijNowaGre());
         add(zagrajPonownie);
+
+        JButton powrotDoMenu = new JButton("Powrót do menu");
+        powrotDoMenu.setFont(new Font("Arial", Font.PLAIN, 20));
+        powrotDoMenu.setBounds(275, 300, 250, 40);
+        powrotDoMenu.addActionListener(e -> okno.pokazPanel("menu"));
+        add(powrotDoMenu);
+
     }
 
     @Override

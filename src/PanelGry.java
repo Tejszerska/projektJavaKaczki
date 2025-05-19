@@ -3,6 +3,9 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
@@ -44,14 +47,14 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         timer.start();
 
 
-        addMouseListener(new MouseAdapter() { // wlaczenie listenera klikniec myszy
+        addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) { //wywolywanie gdy klikniemy w obrebie PanelGry(bez czekania na puszczenie przycisku)
+            public void mousePressed(MouseEvent e) {
                 for (Kaczka k : kaczki) {
                     if (k.trafienie(e.getX(), e.getY())) {
                         wynik++;
-
-                        if (wynik >= maxWynik) {   // jeśli osiągnięto wynik końcowy – koniec gry
+                        if (wynik >= maxWynik) {
+                            zapiszWynik(); // nowa metoda
                             okno.pokazPanel("koniec");
                         }
                         break;
@@ -65,7 +68,20 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank cursor");
         setCursor(blankCursor);
     }
-public void reset(){
+
+    private void zapiszWynik() {
+        String imie = okno.pobierzImieGracza();
+        String data = java.time.LocalDateTime.now().toString();
+        String linia = imie + "," + wynik + "," + data;
+        try (PrintWriter pw = new PrintWriter(new FileWriter("wyniki.csv", true))) {
+            pw.println(linia); // dopisz do pliku
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void reset(){
     wynik = 0;
     kaczki.clear();
     for (int i = 0; i < 5; i++) // dodanie kaczek na tą chwile 5

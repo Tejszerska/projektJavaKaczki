@@ -5,6 +5,8 @@ public class OknoGry extends JFrame{
     private CardLayout cardLayout;
     private JPanel cards;
     private PanelGry panelGry;
+    private String imieGracza = "";
+
     public OknoGry()
     {
         setTitle("Kaczuchy");
@@ -36,5 +38,13 @@ public class OknoGry extends JFrame{
     public void rozpocznijNowaGre() {
         panelGry.reset();
         pokazPanel("gra");
+    }
+
+    public void ustawImieGracza(String imie) {
+        this.imieGracza = imie; // zapisz imię
+    }
+
+    public String pobierzImieGracza() {
+        return imieGracza;
     }
 }
