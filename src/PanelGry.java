@@ -1,23 +1,22 @@
 import javax.swing.*;
+import javax.swing.Timer;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
-import javax.swing.Timer;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseAdapter;
-import java.util.ArrayList;
 
-public class PanelGry extends JPanel implements MouseMotionListener
-{
+public class PanelGry extends JPanel implements MouseMotionListener {
     private int mouseX = 0, mouseY = 0;
     private List<Kaczka> kaczki = new ArrayList<>();
     private int wynik = 0;
     private Celownik celownik;
+    private OknoGry okno;
+    private int maxWynik = 5;      // punkty po ktorych koniec gry -> może zostać zmienną określającą trudność gry?
 
-    public PanelGry()
-    {
+    public PanelGry(OknoGry okno) {
+        this.okno = okno;
+
         setPreferredSize(new Dimension(800, 600));
         setBackground(Color.CYAN);
         addMouseMotionListener(this);
@@ -32,50 +31,51 @@ public class PanelGry extends JPanel implements MouseMotionListener
         //timer aktualizujacy stan gry co 16ms
         Timer timer = new Timer(16, e ->
         {
-                Iterator<Kaczka> it = kaczki.iterator();
-                while (it.hasNext())
-                {
-                    Kaczka k = it.next();
-                    k.move();
+            Iterator<Kaczka> it = kaczki.iterator();
+            while (it.hasNext())
+            {
+                Kaczka k = it.next();
+                k.move();
 
-                    // usuwanie kaczek, które spadły z ekranu
-                    if (k.getY() > 600) {
-                        it.remove();
-                    }
+                // usuwanie kaczek, które spadły z ekranu
+                if (k.getY() > 600) {
+                    it.remove();
                 }
+            }
             repaint();
         });
         timer.start();
 
-        addMouseListener(new MouseAdapter() // wlaczenie listenera klikniec myszy
-        {
+
+        addMouseListener(new MouseAdapter() { // wlaczenie listenera klikniec myszy
             @Override
-            public void mousePressed(MouseEvent e) //wywolywanie gdy klikniemy w obrebie PanelGry(bez czekania na puszczenie przycisku)
-            {
-               for (Kaczka k : kaczki)
-               {
-                   if (k.trafienie(e.getX(), e.getY()))
-                   {
-                       wynik++;
-                       break;
-                   }
-               }
+            public void mousePressed(MouseEvent e) { //wywolywanie gdy klikniemy w obrebie PanelGry(bez czekania na puszczenie przycisku)
+                for (Kaczka k : kaczki) {
+                    if (k.trafienie(e.getX(), e.getY())) {
+                        wynik++;
+
+                        if (wynik >= maxWynik) {   // jeśli osiągnięto wynik końcowy – koniec gry
+                            okno.pokazPanel("koniec");
+                        }
+                        break;
+                    }
+                }
             }
         });
 
         //usuniecie domyslnego kursora z pola gry
         BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor , new Point(0,0), "blank cursor");
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank cursor");
         setCursor(blankCursor);
     }
 
     @Override
-    protected void paintComponent(Graphics g) // kolorowanie kaczek i celownika
-    {
+    protected void paintComponent(Graphics g) { // kolorowanie kaczek i celownika
         super.paintComponent(g);
-        g.drawImage(Sprites.tlo,0,0,getWidth(),getHeight(),null);
-        for (Kaczka k : kaczki)
-        {
+
+        g.drawImage(Sprites.tlo, 0, 0, getWidth(), getHeight(), null);
+
+        for (Kaczka k : kaczki) {
             k.draw(g);
         }
 
@@ -93,8 +93,8 @@ public class PanelGry extends JPanel implements MouseMotionListener
         celownik.setPosition(e.getX(), e.getY()); //wywolujemy metode z klasy celownik dla ustalenia jego pozycji
     }
 
-    @Override//niepotrzebne ale trzeba nadpisać z powodu implementacji interfejsu
-    public void mouseDragged(MouseEvent e)
-    {
+   @Override//niepotrzebne ale trzeba nadpisać z powodu implementacji interfejsu
+
+    public void mouseDragged(MouseEvent e) {
     }
 }
