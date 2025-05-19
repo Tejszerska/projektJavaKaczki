@@ -1,43 +1,39 @@
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class PanelGry extends JPanel implements MouseMotionListener {
     private int mouseX = 0, mouseY = 0;
     private List<Kaczka> kaczki = new ArrayList<>();
-    private int wynik = 0;
+    private int postep = 0;
     private Celownik celownik;
     private OknoGry okno;
-    private int maxWynik = 5;      // punkty po ktorych koniec gry -> może zostać zmienną określającą trudność gry?
+    private int maxPostep = 5;
+    private long startCzas;
+    private long koniecCzas;
 
     public PanelGry(OknoGry okno) {
         this.okno = okno;
-
         setPreferredSize(new Dimension(800, 600));
         setBackground(Color.CYAN);
         addMouseMotionListener(this);
 
+        celownik = new Celownik(0, 0);
 
-
-        celownik = new Celownik(0,0); // tworzymy celownik i podajemy pola do konstruktora
-
-        //timer aktualizujacy stan gry co 16ms
-        Timer timer = new Timer(16, e ->
-        {
+        Timer timer = new Timer(16, e -> {
             Iterator<Kaczka> it = kaczki.iterator();
-            while (it.hasNext())
-            {
+            while (it.hasNext()) {
                 Kaczka k = it.next();
                 k.move();
-
-                // usuwanie kaczek, które spadły z ekranu
                 if (k.getY() > 600) {
                     it.remove();
                 }
@@ -46,15 +42,20 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         });
         timer.start();
 
-
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 for (Kaczka k : kaczki) {
                     if (k.trafienie(e.getX(), e.getY())) {
-                        wynik++;
-                        if (wynik >= maxWynik) {
-                            zapiszWynik(); // nowa metoda
+                        postep++;
+                        if (postep >= maxPostep) {
+                            koniecCzas = System.currentTimeMillis();
+                            long czasGry = koniecCzas - startCzas;
+                            double czasSekundy = czasGry / 1000.0;
+                            double srednia = czasSekundy / maxPostep;
+
+                            okno.pobierzPanelKoniec().ustawStatystyki(maxPostep, czasSekundy, srednia);
+                            zapiszWynik(maxPostep, srednia);
                             okno.pokazPanel("koniec");
                         }
                         break;
@@ -63,58 +64,53 @@ public class PanelGry extends JPanel implements MouseMotionListener {
             }
         });
 
-        //usuniecie domyslnego kursora z pola gry
         BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank cursor");
         setCursor(blankCursor);
     }
 
-    private void zapiszWynik() {
+    private void zapiszWynik(int liczbaKaczek, double sredniaCzasNaKaczke) {
         String imie = okno.pobierzImieGracza();
-        String data = java.time.LocalDateTime.now().toString();
-        String linia = imie + "," + wynik + "," + data;
+        String data = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        String linia = imie + "," + liczbaKaczek + "," + data + "," + String.format("%.2f", sredniaCzasNaKaczke);
         try (PrintWriter pw = new PrintWriter(new FileWriter("wyniki.csv", true))) {
-            pw.println(linia); // dopisz do pliku
+            pw.println(linia);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public void reset(){
-    wynik = 0;
-    kaczki.clear();
-    for (int i = 0; i < 5; i++) // dodanie kaczek na tą chwile 5
-    {
-        kaczki.add(new Kaczka());
+    public void reset() {
+        postep = 0;
+        kaczki.clear();
+        for (int i = 0; i < 5; i++) {
+            kaczki.add(new Kaczka());
+        }
+        startCzas = System.currentTimeMillis();
     }
-}
+
     @Override
-    protected void paintComponent(Graphics g) { // kolorowanie kaczek i celownika
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         g.drawImage(Sprites.tlo, 0, 0, getWidth(), getHeight(), null);
-
         for (Kaczka k : kaczki) {
             k.draw(g);
         }
-
         g.setColor(Color.BLACK);
-        g.drawString("Wynik: " + wynik, 10, 20);
-
+        g.drawString("Postęp: " + postep + " / " + maxPostep, 10, 20);
         celownik.draw(g);
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) // lokalizacja pozycji myszy
-    {
+    public void mouseMoved(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
-        celownik.setPosition(e.getX(), e.getY()); //wywolujemy metode z klasy celownik dla ustalenia jego pozycji
+        celownik.setPosition(mouseX, mouseY);
     }
 
-   @Override//niepotrzebne ale trzeba nadpisać z powodu implementacji interfejsu
-
+    @Override
     public void mouseDragged(MouseEvent e) {
     }
 }

@@ -45,7 +45,7 @@ public class MenuStartowe extends JPanel {
                         JOptionPane.showMessageDialog(this, "Wprowadź imię gracza.");
                         return;
                     }
-//                    okno.ustawImieGracza(imie); // zapisujemy imię w oknie gry
+                   okno.ustawImieGracza(imie); // zapisujemy imię w oknie gry
                     okno.rozpocznijNowaGre(); // start gry
                 });
 
@@ -64,15 +64,35 @@ public class MenuStartowe extends JPanel {
                     return;
                 }
                 List<String> linie = Files.readAllLines(sciezka);
-                StringBuilder sb = new StringBuilder("Wyniki:\n");
-                for (String linia : linie) {
-                    sb.append(linia).append("\n");
+                if (linie.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Plik wyników jest pusty.");
+                    return;
                 }
-                JOptionPane.showMessageDialog(this, sb.toString());
+
+                StringBuilder sb = new StringBuilder("Historia wyników:\n\n");
+                for (String linia : linie) {
+                    String[] dane = linia.split(",");
+                    if (dane.length >= 4) {
+                        String imie = dane[0];
+                        String trafienia = dane[1];
+                        String data = dane[2];
+                        String srednia = dane[3];
+
+                        sb.append("Gracz: ").append(imie).append("\n");
+                        sb.append("Trafione kaczki: ").append(trafienia).append("\n");
+                        sb.append("Data: ").append(data).append("\n");
+                        sb.append("Śr. czas/kaczkę: ").append(srednia).append(" s\n");
+                        sb.append("-------------------------\n");
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, sb.toString(), "Wyniki", JOptionPane.INFORMATION_MESSAGE);
+
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "Błąd przy czytaniu wyników.");
             }
         });
+
         add(wyniki);
 
         // zakoncz
