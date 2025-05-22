@@ -10,17 +10,11 @@ import java.io.IOException;
 public class OknoGry extends JFrame {
     private CardLayout cardLayout;
     private JPanel cards;
-
     private PanelGry panelGry;
     private PanelKoniec panelKoniec;
+
     private String imieGracza = "";
-
-    private String imieGracza1 = "";
-    private String imieGracza2 = "";
-    private int licznikImion = 0;
-    public static String imieGraczaStatic = "";
-
-
+    private static final String[] imionaGraczy = new String[3]; // indexy 1 i 2
 
     public OknoGry() throws IOException {
         setTitle("Kaczuchy Multiplayer");
@@ -33,10 +27,8 @@ public class OknoGry extends JFrame {
         MenuStartowe menuStartowe = new MenuStartowe(this);
         panelKoniec = new PanelKoniec(this);
 
-        // Utwórz PanelGry i klienta, przekaż klient do PanelGry
         final PanelGry[] tempPanel = new PanelGry[1];
-
-        KlientGry klient = new KlientGry("localhost", 5555, stan -> {
+        KlientGry klient = new KlientGry("localhost", 5555, imieGracza, stan -> {
             if (tempPanel[0] != null) {
                 tempPanel[0].aktualizujStan(stan);
             }
@@ -57,20 +49,23 @@ public class OknoGry extends JFrame {
 
     public void ustawImieGracza(String imie) {
         this.imieGracza = imie;
-        imieGraczaStatic = imie;
-    }
-
-
-    public String getImieGracza1() {
-        return imieGracza1;
-    }
-
-    public String getImieGracza2() {
-        return imieGracza2;
     }
 
     public String pobierzImieGracza() {
         return imieGracza;
+    }
+
+    public void ustawImieDlaId(int id, String imie) {
+        if (id >= 1 && id <= 2) {
+            imionaGraczy[id] = imie;
+        }
+    }
+
+    public String pobierzImieDlaId(int id) {
+        if (id >= 1 && id <= 2) {
+            return imionaGraczy[id] != null ? imionaGraczy[id] : "Gracz " + id;
+        }
+        return "Gracz";
     }
 
     public void pokazPanel(String nazwa) {
@@ -89,7 +84,4 @@ public class OknoGry extends JFrame {
     public void powiadomSerwerOStart() {
         panelGry.getKlient().wyslijGotowosc();
     }
-
-
-
 }

@@ -11,23 +11,24 @@ public class KlientGry {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private final Consumer<StanGry> onStanGryOdebrany;
-    private int idGracza;
+    private String imieGracza; // dodaj pole w KlientGry
 
-    public KlientGry(String host, int port, Consumer<StanGry> onStanGryOdebrany) throws IOException {
+    private int idGracza;
+    public KlientGry(String host, int port, String imieGracza, Consumer<StanGry> onStanGryOdebrany) throws IOException {
+        this.imieGracza = imieGracza;
         this.socket = new Socket(host, port);
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
         this.onStanGryOdebrany = onStanGryOdebrany;
 
-        // Odebranie ID gracza od serwera
         try {
             Object id = in.readObject();
             if (id instanceof Integer) {
                 idGracza = (Integer) id;
                 System.out.println("Otrzymano ID gracza: " + idGracza);
 
-                // WYŚLIJ IMIĘ
-                out.writeObject(new ImieGracza(idGracza, OknoGry.imieGraczaStatic));
+                // Wyślij imię
+                out.writeObject(new ImieGracza(idGracza, imieGracza));
                 out.flush();
             }
         } catch (ClassNotFoundException e) {

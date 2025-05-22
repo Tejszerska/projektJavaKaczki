@@ -1,7 +1,6 @@
 package gui;
 
 import gra.Sprites;
-import gui.OknoGry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +19,7 @@ public class PanelKoniec extends JPanel {
         JLabel koniec = new JLabel("Koniec Gry!", JLabel.CENTER);
         koniec.setFont(new Font("Arial", Font.BOLD, 36));
         koniec.setForeground(Color.WHITE);
-        koniec.setBounds(0, 80, 800, 50); // wyśrodkowany na całą szerokość
+        koniec.setBounds(0, 80, 800, 50);
         add(koniec);
 
         wynikLabel = new JLabel("", JLabel.CENTER);
@@ -45,13 +44,12 @@ public class PanelKoniec extends JPanel {
         zagrajPonownie.setFont(new Font("Arial", Font.PLAIN, 20));
         zagrajPonownie.setBounds(275, 280, 250, 50);
         zagrajPonownie.addActionListener(e -> {
-            okno.powiadomSerwerOStart(); // <<< bez tego serwer nie ruszy
+            okno.powiadomSerwerOStart();
             okno.rozpocznijNowaGre();
             wynikLabel.setText("");
             czasLabel.setText("");
             sredniaLabel.setText("");
         });
-
         add(zagrajPonownie);
 
         JButton powrotDoMenu = new JButton("Powrót do menu");
@@ -65,17 +63,20 @@ public class PanelKoniec extends JPanel {
         });
         add(powrotDoMenu);
     }
-    public void ustawStatystykiGraczy(String imie1, String imie2, int wynikA, int wynikB, double czasSekundy) {
+
+    public void ustawStatystykiGraczy(int wynikA, int wynikB, double czasSekundy) {
+        String imie1 = okno.pobierzImieDlaId(1);
+        String imie2 = okno.pobierzImieDlaId(2);
         String zwyciezca;
+
         if (wynikA > wynikB) zwyciezca = imie1 + " wygrał!";
         else if (wynikB > wynikA) zwyciezca = imie2 + " wygrał!";
         else zwyciezca = "Remis!";
+
         wynikLabel.setText(imie1 + ": " + wynikA + " | " + imie2 + ": " + wynikB);
         czasLabel.setText("Czas gry: " + String.format("%.2f", czasSekundy) + " s");
         sredniaLabel.setText(zwyciezca);
     }
-
-
 
     @Override
     protected void paintComponent(Graphics g) {

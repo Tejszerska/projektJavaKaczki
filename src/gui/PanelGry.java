@@ -7,31 +7,24 @@ import siec.StanGry;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 public class PanelGry extends JPanel implements MouseMotionListener {
     private List<DaneKaczki> kaczki = new ArrayList<>();
-    private int szerokosc = 800;
-    private int wysokosc = 600;
-    private int wynik1 = 0;
-    private int wynik2 = 0;
+    private int szerokosc = 800, wysokosc = 600;
+    private int wynik1 = 0, wynik2 = 0;
     private KlientGry klient;
-
-    private int mouseX = 0;
-    private int mouseY = 0;
+    private int mouseX = 0, mouseY = 0;
     private OknoGry okno;
     private long czasStartu = 0;
     private boolean graZakonczona = false;
+
     private final MouseListener listener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
@@ -41,12 +34,10 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         }
     };
 
-
     public PanelGry(KlientGry klient, OknoGry okno) {
         this.klient = klient;
         this.okno = okno;
         this.addMouseListener(listener);
-
         setPreferredSize(new Dimension(szerokosc, wysokosc));
         setBackground(Color.CYAN);
         addMouseMotionListener(this);
@@ -67,32 +58,26 @@ public class PanelGry extends JPanel implements MouseMotionListener {
             long czasZakonczenia = System.currentTimeMillis();
             double czasSekundy = (czasZakonczenia - czasStartu) / 1000.0;
 
-            // Zapis do pliku CSV
-            zapiszWynikDoPliku(okno.pobierzImieGracza(), wynik1, czasSekundy);
+            int mojId = klient.getIdGracza();
+            okno.ustawImieDlaId(mojId, okno.pobierzImieGracza());
 
-            // Panel końcowy
+            // Zapisz wynik tego gracza do pliku
+            zapiszWynikDoPliku(okno.pobierzImieGracza(),
+                    mojId == 1 ? stan.wynikGracza1 : stan.wynikGracza2,
+                    czasSekundy);
+
             okno.pobierzPanelKoniec().ustawStatystykiGraczy(
-                    stan.imieGracza1,
-                    stan.imieGracza2,
-                    stan.wynikGracza1,
-                    stan.wynikGracza2,
-                    czasSekundy
+                    stan.wynikGracza1, stan.wynikGracza2, czasSekundy
             );
-
             okno.pokazPanel("koniec");
-
             for (MouseListener l : getMouseListeners()) removeMouseListener(l);
         }
-
-
     }
+
     private void zapiszWynikDoPliku(String imie, int trafienia, double czasSekundy) {
         String data = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
         double srednia = trafienia > 0 ? czasSekundy / trafienia : czasSekundy;
-
-        // Format: imię,trafienia,data,średni czas
         String linia = String.format("%s,%d,%s,%.2f\n", imie, trafienia, data, srednia);
-
         try (FileWriter writer = new FileWriter("wyniki.csv", true)) {
             writer.write(linia);
         } catch (IOException e) {
@@ -100,12 +85,10 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         }
     }
 
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(Sprites.tlo, 0, 0, getWidth(), getHeight(), null);
-
         for (DaneKaczki k : kaczki) {
             Image img = switch (k.grafika) {
                 case "leci1" -> Sprites.leci1;
@@ -113,44 +96,25 @@ public class PanelGry extends JPanel implements MouseMotionListener {
                 case "spada" -> Sprites.spada;
                 default -> null;
             };
-            if (img != null) {
-                g.drawImage(img, k.x, k.y, null);
-            }
+            if (img != null) g.drawImage(img, k.x, k.y, null);
         }
-
         g.setColor(Color.BLACK);
         g.drawString("Gracz 1: " + wynik1 + "   Gracz 2: " + wynik2, 10, 20);
-
         g.drawImage(Sprites.celownik, mouseX - 64, mouseY - 64, null);
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        mouseX = e.getX();
-        mouseY = e.getY();
-        repaint();
-    }
+    @Override public void mouseMoved(MouseEvent e) { mouseX = e.getX(); mouseY = e.getY(); repaint(); }
+    @Override public void mouseDragged(MouseEvent e) {}
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
-    public void setKlient(KlientGry klient) {
-        this.klient = klient;
+    public KlientGry getKlient() {
+        return klient;
     }
 
     public void rozpocznijNowaGre() {
         if (getMouseListeners().length == 0) {
             addMouseListener(listener);
         }
-        this.czasStartu = System.currentTimeMillis();  // ← DODANE
+        this.czasStartu = System.currentTimeMillis();
         this.graZakonczona = false;
     }
-
-
-
-    public KlientGry getKlient() {
-        return klient;
-    }
-
 }
