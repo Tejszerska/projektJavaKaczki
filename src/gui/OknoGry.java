@@ -1,7 +1,11 @@
 package gui;
 
+import siec.KlientGry;
+import siec.StanGry;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class OknoGry extends JFrame {
     private CardLayout cardLayout;
@@ -11,17 +15,28 @@ public class OknoGry extends JFrame {
     private PanelKoniec panelKoniec;
     private String imieGracza = "";
 
-    public OknoGry() {
-        setTitle("Kaczuchy");
+    public OknoGry() throws IOException {
+        setTitle("Kaczuchy Multiplayer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
-        panelGry = new PanelGry(this);
         MenuStartowe menuStartowe = new MenuStartowe(this);
         panelKoniec = new PanelKoniec(this);
+
+        // Utwórz PanelGry i klienta, przekaż klient do PanelGry
+        final PanelGry[] tempPanel = new PanelGry[1];
+
+        KlientGry klient = new KlientGry("localhost", 5555, stan -> {
+            if (tempPanel[0] != null) {
+                tempPanel[0].aktualizujStan(stan);
+            }
+        });
+
+        panelGry = new PanelGry(klient);
+        tempPanel[0] = panelGry;
 
         cards.add(menuStartowe, "menu");
         cards.add(panelGry, "gra");
@@ -33,15 +48,6 @@ public class OknoGry extends JFrame {
         setVisible(true);
     }
 
-    public void pokazPanel(String nazwaPanelu) {
-        cardLayout.show(cards, nazwaPanelu);
-    }
-
-    public void rozpocznijNowaGre() {
-        panelGry.reset();
-        pokazPanel("gra");
-    }
-
     public void ustawImieGracza(String imie) {
         this.imieGracza = imie;
     }
@@ -50,7 +56,16 @@ public class OknoGry extends JFrame {
         return imieGracza;
     }
 
+    public void pokazPanel(String nazwa) {
+        cardLayout.show(cards, nazwa);
+    }
+
     public PanelKoniec pobierzPanelKoniec() {
         return panelKoniec;
     }
+
+    public void rozpocznijNowaGre() {
+        pokazPanel("gra");
+    }
+
 }
