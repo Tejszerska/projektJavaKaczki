@@ -65,23 +65,16 @@ public class PanelKoniec extends JPanel {
         });
         add(powrotDoMenu);
     }
-
-    public void ustawStatystyki(int wynik, double czasSekundy, double srednia) {
-        wynikLabel.setText("Trafione kaczki: " + wynik);
-        czasLabel.setText("Czas gry: " + String.format("%.2f", czasSekundy) + " s");
-        sredniaLabel.setText("Średni czas/kaczkę: " + String.format("%.2f", srednia) + " s");
-    }
-
-    public void ustawStatystykiGraczy(int wynikA, int wynikB, double czasSekundy) {
+    public void ustawStatystykiGraczy(String imie1, String imie2, int wynikA, int wynikB, double czasSekundy) {
         String zwyciezca;
-        if (wynikA > wynikB) zwyciezca = "Gracz A wygrał!";
-        else if (wynikB > wynikA) zwyciezca = "Gracz B wygrał!";
+        if (wynikA > wynikB) zwyciezca = imie1 + " wygrał!";
+        else if (wynikB > wynikA) zwyciezca = imie2 + " wygrał!";
         else zwyciezca = "Remis!";
-
-        wynikLabel.setText("Gracz A: " + wynikA + " | Gracz B: " + wynikB);
+        wynikLabel.setText(imie1 + ": " + wynikA + " | " + imie2 + ": " + wynikB);
         czasLabel.setText("Czas gry: " + String.format("%.2f", czasSekundy) + " s");
         sredniaLabel.setText(zwyciezca);
     }
+
 
 
     @Override

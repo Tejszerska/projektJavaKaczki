@@ -72,10 +72,13 @@ public class PanelGry extends JPanel implements MouseMotionListener {
 
             // Panel końcowy
             okno.pobierzPanelKoniec().ustawStatystykiGraczy(
+                    stan.imieGracza1,
+                    stan.imieGracza2,
                     stan.wynikGracza1,
                     stan.wynikGracza2,
                     czasSekundy
             );
+
             okno.pokazPanel("koniec");
 
             for (MouseListener l : getMouseListeners()) removeMouseListener(l);

@@ -15,6 +15,13 @@ public class OknoGry extends JFrame {
     private PanelKoniec panelKoniec;
     private String imieGracza = "";
 
+    private String imieGracza1 = "";
+    private String imieGracza2 = "";
+    private int licznikImion = 0;
+    public static String imieGraczaStatic = "";
+
+
+
     public OknoGry() throws IOException {
         setTitle("Kaczuchy Multiplayer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,6 +57,16 @@ public class OknoGry extends JFrame {
 
     public void ustawImieGracza(String imie) {
         this.imieGracza = imie;
+        imieGraczaStatic = imie;
+    }
+
+
+    public String getImieGracza1() {
+        return imieGracza1;
+    }
+
+    public String getImieGracza2() {
+        return imieGracza2;
     }
 
     public String pobierzImieGracza() {

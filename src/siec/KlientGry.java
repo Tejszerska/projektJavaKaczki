@@ -1,5 +1,7 @@
 package siec;
 
+import gui.OknoGry;
+
 import java.io.*;
 import java.net.*;
 import java.util.function.Consumer;
@@ -23,6 +25,10 @@ public class KlientGry {
             if (id instanceof Integer) {
                 idGracza = (Integer) id;
                 System.out.println("Otrzymano ID gracza: " + idGracza);
+
+                // WYŚLIJ IMIĘ
+                out.writeObject(new ImieGracza(idGracza, OknoGry.imieGraczaStatic));
+                out.flush();
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

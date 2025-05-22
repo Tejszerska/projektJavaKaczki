@@ -28,6 +28,10 @@ public class SerwerGry {
     private volatile int gotowiGracze = 0;
     private volatile boolean graRozpoczeta = false;
 
+    private String imieGracza1 = "Gracz A";
+    private String imieGracza2 = "Gracz B";
+
+
 
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(5555);
@@ -100,7 +104,14 @@ public class SerwerGry {
         boolean koniecGry = kaczki.stream().allMatch(k -> k.zestrzelona);
 
         // 1. Utwórz stan gry na podstawie aktualnych wyników
-        StanGry stan = new StanGry(kopiujKaczki(), wynikGracza1, wynikGracza2, koniecGry);
+        StanGry stan = new StanGry(
+                kopiujKaczki(),
+                wynikGracza1,
+                wynikGracza2,
+                koniecGry,
+                imieGracza1,
+                imieGracza2
+        );
 
         // 2. Wyślij go do klientów
         for (ObjectOutputStream out : wyjscia) {
@@ -198,7 +209,11 @@ public class SerwerGry {
                     } else if (obj instanceof GotowoscGracza g) {
                         gotowiGracze++;
                         System.out.println("Gracz #" + g.graczId + " jest gotowy.");
+                    } else if (obj instanceof ImieGracza imie) {
+                        if (imie.graczId == 1) imieGracza1 = imie.imie;
+                        else if (imie.graczId == 2) imieGracza2 = imie.imie;
                     }
+
 
                 }
             } catch (IOException | ClassNotFoundException e) {
