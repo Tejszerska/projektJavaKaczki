@@ -35,7 +35,7 @@ public class OknoGry extends JFrame {
             }
         });
 
-        panelGry = new PanelGry(klient);
+        panelGry = new PanelGry(klient, this);
         tempPanel[0] = panelGry;
 
         cards.add(menuStartowe, "menu");
@@ -65,7 +65,14 @@ public class OknoGry extends JFrame {
     }
 
     public void rozpocznijNowaGre() {
+        panelGry.rozpocznijNowaGre();
         pokazPanel("gra");
     }
+
+    public void powiadomSerwerOStart() {
+        panelGry.getKlient().wyslijGotowosc();
+    }
+
+
 
 }

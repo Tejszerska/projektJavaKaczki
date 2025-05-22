@@ -61,4 +61,19 @@ public class KlientGry {
     public void ustawIdGracza(int id) {
         this.idGracza = id;
     }
+
+    public void wyslijGotowosc() {
+        try {
+            out.writeObject(new GotowoscGracza(idGracza));
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getIdGracza() {
+        return idGracza;
+    }
+
+
 }

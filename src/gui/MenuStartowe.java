@@ -44,7 +44,10 @@ public class MenuStartowe extends JPanel {
                 return;
             }
             okno.ustawImieGracza(imie);
+            okno.powiadomSerwerOStart();
             okno.rozpocznijNowaGre();
+
+
         });
         add(start);
 
@@ -71,12 +74,14 @@ public class MenuStartowe extends JPanel {
                         String trafienia = dane[1];
                         String data = dane[2];
                         String srednia = dane[3];
+
                         sb.append("Gracz: ").append(imieG).append("\n");
                         sb.append("Trafione kaczki: ").append(trafienia).append("\n");
                         sb.append("Data: ").append(data).append("\n");
                         sb.append("Śr. czas/kaczkę: ").append(srednia).append(" s\n");
                         sb.append("-------------------------\n");
                     }
+
                 }
                 JOptionPane.showMessageDialog(this, sb.toString(), "Wyniki", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {

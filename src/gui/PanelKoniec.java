@@ -44,13 +44,25 @@ public class PanelKoniec extends JPanel {
         JButton zagrajPonownie = new JButton("Zagraj ponownie");
         zagrajPonownie.setFont(new Font("Arial", Font.PLAIN, 20));
         zagrajPonownie.setBounds(275, 280, 250, 50);
-        zagrajPonownie.addActionListener(e -> okno.rozpocznijNowaGre());
+        zagrajPonownie.addActionListener(e -> {
+            okno.powiadomSerwerOStart(); // <<< bez tego serwer nie ruszy
+            okno.rozpocznijNowaGre();
+            wynikLabel.setText("");
+            czasLabel.setText("");
+            sredniaLabel.setText("");
+        });
+
         add(zagrajPonownie);
 
         JButton powrotDoMenu = new JButton("Powrót do menu");
         powrotDoMenu.setFont(new Font("Arial", Font.PLAIN, 20));
         powrotDoMenu.setBounds(275, 340, 250, 40);
-        powrotDoMenu.addActionListener(e -> okno.pokazPanel("menu"));
+        powrotDoMenu.addActionListener(e -> {
+            okno.pokazPanel("menu");
+            wynikLabel.setText("");
+            czasLabel.setText("");
+            sredniaLabel.setText("");
+        });
         add(powrotDoMenu);
     }
 
@@ -59,6 +71,18 @@ public class PanelKoniec extends JPanel {
         czasLabel.setText("Czas gry: " + String.format("%.2f", czasSekundy) + " s");
         sredniaLabel.setText("Średni czas/kaczkę: " + String.format("%.2f", srednia) + " s");
     }
+
+    public void ustawStatystykiGraczy(int wynikA, int wynikB, double czasSekundy) {
+        String zwyciezca;
+        if (wynikA > wynikB) zwyciezca = "Gracz A wygrał!";
+        else if (wynikB > wynikA) zwyciezca = "Gracz B wygrał!";
+        else zwyciezca = "Remis!";
+
+        wynikLabel.setText("Gracz A: " + wynikA + " | Gracz B: " + wynikB);
+        czasLabel.setText("Czas gry: " + String.format("%.2f", czasSekundy) + " s");
+        sredniaLabel.setText(zwyciezca);
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {

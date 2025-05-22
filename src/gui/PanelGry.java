@@ -9,9 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PanelGry extends JPanel implements MouseMotionListener {
@@ -24,21 +29,27 @@ public class PanelGry extends JPanel implements MouseMotionListener {
 
     private int mouseX = 0;
     private int mouseY = 0;
+    private OknoGry okno;
+    private long czasStartu = 0;
+    private boolean graZakonczona = false;
+    private final MouseListener listener = new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (klient != null) {
+                klient.wyslijStrzal(e.getX(), e.getY());
+            }
+        }
+    };
 
-    public PanelGry(KlientGry klient) {
+
+    public PanelGry(KlientGry klient, OknoGry okno) {
         this.klient = klient;
+        this.okno = okno;
+        this.addMouseListener(listener);
+
         setPreferredSize(new Dimension(szerokosc, wysokosc));
         setBackground(Color.CYAN);
         addMouseMotionListener(this);
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (klient != null) {
-                    klient.wyslijStrzal(e.getX(), e.getY());
-                }
-            }
-        });
 
         BufferedImage cursor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 0), "blank");
@@ -49,18 +60,41 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         this.kaczki = stan.kaczki;
         this.wynik1 = stan.wynikGracza1;
         this.wynik2 = stan.wynikGracza2;
+        repaint();
 
-        if (stan.graZakonczona) {
-            // zablokuj kliknięcia
-            this.removeMouseListener(this.getMouseListeners()[0]);
+        if (stan.graZakonczona && !graZakonczona) {
+            graZakonczona = true;
+            long czasZakonczenia = System.currentTimeMillis();
+            double czasSekundy = (czasZakonczenia - czasStartu) / 1000.0;
 
-            // pokaz panel koncowy (jeśli chcesz)
-            JOptionPane.showMessageDialog(this, "Gra zakończona!");
-            // lub:
-            // okno.pokazPanel("koniec"); // jeżeli masz referencję do okna
+            // Zapis do pliku CSV
+            zapiszWynikDoPliku(okno.pobierzImieGracza(), wynik1, czasSekundy);
+
+            // Panel końcowy
+            okno.pobierzPanelKoniec().ustawStatystykiGraczy(
+                    stan.wynikGracza1,
+                    stan.wynikGracza2,
+                    czasSekundy
+            );
+            okno.pokazPanel("koniec");
+
+            for (MouseListener l : getMouseListeners()) removeMouseListener(l);
         }
 
-        repaint();
+
+    }
+    private void zapiszWynikDoPliku(String imie, int trafienia, double czasSekundy) {
+        String data = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
+        double srednia = trafienia > 0 ? czasSekundy / trafienia : czasSekundy;
+
+        // Format: imię,trafienia,data,średni czas
+        String linia = String.format("%s,%d,%s,%.2f\n", imie, trafienia, data, srednia);
+
+        try (FileWriter writer = new FileWriter("wyniki.csv", true)) {
+            writer.write(linia);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -101,4 +135,19 @@ public class PanelGry extends JPanel implements MouseMotionListener {
     public void setKlient(KlientGry klient) {
         this.klient = klient;
     }
+
+    public void rozpocznijNowaGre() {
+        if (getMouseListeners().length == 0) {
+            addMouseListener(listener);
+        }
+        this.czasStartu = System.currentTimeMillis();  // ← DODANE
+        this.graZakonczona = false;
+    }
+
+
+
+    public KlientGry getKlient() {
+        return klient;
+    }
+
 }
