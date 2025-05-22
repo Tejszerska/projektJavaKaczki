@@ -1,3 +1,8 @@
+package gui;
+
+import gra.Sprites;
+import gui.OknoGry;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;

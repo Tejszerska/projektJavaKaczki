@@ -1,3 +1,8 @@
+package main;
+
+import gra.Sprites;
+import gui.OknoGry;
+
 import java.io.IOException;
 
 public class Main

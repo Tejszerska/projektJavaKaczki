@@ -1,3 +1,5 @@
+package gra;
+
 import java.awt.Graphics;
 
 public abstract class GraObject

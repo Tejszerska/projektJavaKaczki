@@ -1,3 +1,10 @@
+package gui;
+
+import gra.Celownik;
+import gra.Kaczka;
+import gra.Sprites;
+import gui.OknoGry;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -10,6 +17,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class PanelGry extends JPanel implements MouseMotionListener {
     private int mouseX = 0, mouseY = 0;
@@ -73,7 +81,7 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         String imie = okno.pobierzImieGracza();
         String data = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        String linia = imie + "," + liczbaKaczek + "," + data + "," + String.format("%.2f", sredniaCzasNaKaczke);
+        String linia = imie + "," + liczbaKaczek + "," + data + "," + String.format(Locale.US, "%.2f", sredniaCzasNaKaczke); // Locale.US wymusza użycie kropki, bez tego źle odczytuje wyniki z pliku csv (niejawne parsowanie double)
         try (PrintWriter pw = new PrintWriter(new FileWriter("wyniki.csv", true))) {
             pw.println(linia);
         } catch (IOException e) {

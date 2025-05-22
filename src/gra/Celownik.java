@@ -1,8 +1,10 @@
+package gra;
+
 import java.awt.*;
 
 public class Celownik extends GraObject
 {
-    public Celownik(int x, int y) //konstruktor dziedziczący z GraObject
+    public Celownik(int x, int y) //konstruktor dziedziczący z gra.GraObject
     {
         super(x,y,128,128);
     }
