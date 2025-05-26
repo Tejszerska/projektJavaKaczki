@@ -9,30 +9,30 @@ public abstract class GraObject
 
     public GraObject(int x, int y, int w, int h)
     {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
+ this.x = x;
+ this.y = y;
+ this.w = w;
+ this.h = h;
     }
 
     public int getX()
     {
-        return x;
+ return x;
     }
 
     public int getY()
     {
-        return y;
+ return y;
     }
 
     public int getW()
     {
-        return w;
+ return w;
     }
 
     public int getH()
     {
-        return h;
+ return h;
     }
 
     public abstract void move();
@@ -40,6 +40,6 @@ public abstract class GraObject
 
     public boolean trafiona(int mouseX,int mouseY)
     {
-        return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
+ return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 }

@@ -2,7 +2,8 @@ package siec;
 
 import java.io.Serializable;
 
-public class ImieGracza implements Serializable {
+public class ImieGracza implements Serializable { // Obiekt do przesyłania imienia gracza wraz z jego ID
+
     public int graczId;
     public String imie;
 

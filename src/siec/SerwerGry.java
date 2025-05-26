@@ -12,7 +12,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
 public class SerwerGry {
 
     private final List<DaneKaczki> kaczki = new ArrayList<>();
@@ -22,29 +21,26 @@ public class SerwerGry {
 
     private final List<ObjectOutputStream> wyjscia = new CopyOnWriteArrayList<>();
     private final BlockingQueue<DaneStrzalu> kolejkaStrzalow = new LinkedBlockingQueue<>();
-
     private int wynikGracza1 = 0;
     private int wynikGracza2 = 0;
     private volatile int gotowiGracze = 0;
     private volatile boolean graRozpoczeta = false;
 
-    private String imieGracza1 = "Gracz A";
-    private String imieGracza2 = "Gracz B";
-
-
+    private String imieGracza1 = "Gracz A"; // Domyślne imię gracza 1
+    private String imieGracza2 = "Gracz B"; // Domyślne imię gracza 2
 
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(5555);
         System.out.println("Serwer nasłuchuje na porcie 5555...");
 
-        // Oczekiwanie na 2 graczy
+        // Oczekiwanie na połączenie dwóch graczy
         for (int i = 1; i <= 2; i++) {
-            Socket socket = serverSocket.accept();
+            Socket socket = serverSocket.accept(); // Akceptuj połączenie
             System.out.println("Połączył się gracz #" + i);
-            new Thread(new GraczHandler(socket, i)).start();
+            new Thread(new GraczHandler(socket, i)).start(); // Utwórz wątek do obsługi gracza
         }
 
-        // Inicjalizacja kaczek
+        // Inicjalizacja kaczek na planszy
         for (int i = 0; i < LICZBA_KACZEK; i++) {
             int id = i;
             int x = new Random().nextInt(SZEROKOSC - 128);
@@ -74,20 +70,20 @@ public class SerwerGry {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void przetwarzajStrzaly() {
         while (!kolejkaStrzalow.isEmpty()) {
-            DaneStrzalu s = kolejkaStrzalow.poll();
+            DaneStrzalu s = kolejkaStrzalow.poll(); // Pobierz pierwszy strzał z kolejki
+
             for (DaneKaczki k : kaczki) {
                 if (!k.zestrzelona &&
                         s.x >= k.x && s.x <= k.x + 128 &&
                         s.y >= k.y && s.y <= k.y + 128) {
-
                     k.zestrzelona = true;
                     k.grafika = "spada";
 
+                    // Zwiększ wynik odpowiedniego gracza
                     if (s.graczId == 1) wynikGracza1++;
                     else if (s.graczId == 2) wynikGracza2++;
 
@@ -98,22 +94,13 @@ public class SerwerGry {
         }
     }
 
-
-
     private void przesylajStanGry() {
-        boolean koniecGry = kaczki.stream().allMatch(k -> k.zestrzelona);
+        boolean koniecGry = kaczki.stream().allMatch(k -> k.zestrzelona); // Sprawdź czy wszystkie kaczki zostały zestrzelone
 
-        // 1. Utwórz stan gry na podstawie aktualnych wyników
-        StanGry stan = new StanGry(
-                kopiujKaczki(),
-                wynikGracza1,
-                wynikGracza2,
-                koniecGry,
-                imieGracza1,
-                imieGracza2
-        );
+        // Utwórz nowy obiekt stanu gry
+        StanGry stan = new StanGry(kopiujKaczki(), wynikGracza1, wynikGracza2, koniecGry, imieGracza1, imieGracza2);
 
-        // 2. Wyślij go do klientów
+        // Wyślij stan gry do każdego klienta
         for (ObjectOutputStream out : wyjscia) {
             try {
                 out.reset();
@@ -124,7 +111,7 @@ public class SerwerGry {
             }
         }
 
-        // 3. Dopiero teraz zresetuj stan gry, jeśli się zakończyła
+        // Jeśli gra się zakończyła, zresetuj stan serwera
         if (koniecGry && graRozpoczeta) {
             graRozpoczeta = false;
             gotowiGracze = 0;
@@ -132,6 +119,7 @@ public class SerwerGry {
             wynikGracza2 = 0;
             kaczki.clear();
 
+            // Inicjalizuj nowe kaczki
             for (int i = 0; i < LICZBA_KACZEK; i++) {
                 int id = i;
                 int x = new Random().nextInt(SZEROKOSC - 128);
@@ -147,20 +135,19 @@ public class SerwerGry {
     private List<DaneKaczki> kopiujKaczki() {
         List<DaneKaczki> kopia = new ArrayList<>();
         for (DaneKaczki k : kaczki) {
-            kopia.add(new DaneKaczki(k)); // użyj konstruktora kopiującego
+            kopia.add(new DaneKaczki(k)); // Utwórz kopię obiektu kaczki
         }
         return kopia;
     }
 
-
     private void poruszajKaczki() {
         for (DaneKaczki k : kaczki) {
             if (!k.zestrzelona) {
-
+                // Poruszanie kaczek
                 k.x += k.dx;
                 k.y += k.dy;
 
-                // odbicia od ścian
+                // Odbijanie od krawędzi planszy
                 if (k.x <= 0 || k.x + 128 >= SZEROKOSC) {
                     k.dx = -k.dx;
                 }
@@ -168,11 +155,14 @@ public class SerwerGry {
                     k.dy = -k.dy;
                 }
 
-
+                // Zapobiegaj wychodzeniu poza ekran
                 k.x = Math.max(0, Math.min(k.x, SZEROKOSC - 128));
                 k.y = Math.max(0, Math.min(k.y, WYSOKOSC - 128));
+
+                // Zmieniaj grafikę lecącej kaczki co 300 ms
                 k.grafika = (System.currentTimeMillis() / 300) % 2 == 0 ? "leci1" : "leci2";
             } else {
+                // Spadająca kaczka
                 k.y += 4;
             }
         }
@@ -193,7 +183,7 @@ public class SerwerGry {
                     ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())
             ) {
-                out.writeObject(graczId); // << TU
+                out.writeObject(graczId); // Wyślij ID gracza do klienta
                 out.flush();
 
                 synchronized (wyjscia) {
@@ -201,10 +191,11 @@ public class SerwerGry {
                 }
 
                 while (true) {
-                    Object obj = in.readObject();
+                    Object obj = in.readObject(); // Odbierz obiekt od klienta
+
                     if (obj instanceof DaneStrzalu strzal) {
                         if (graRozpoczeta) {
-                            kolejkaStrzalow.offer(strzal);
+                            kolejkaStrzalow.offer(strzal); // Dodaj strzał do kolejki
                         }
                     } else if (obj instanceof GotowoscGracza g) {
                         gotowiGracze++;
@@ -213,22 +204,19 @@ public class SerwerGry {
                         if (imie.graczId == 1) imieGracza1 = imie.imie;
                         else if (imie.graczId == 2) imieGracza2 = imie.imie;
                     }
-
-
                 }
+
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Gracz #" + graczId + " odłączony.");
+                System.out.println("Gracz #" + graczId + " odłączony."); // Obsługa rozłączenia gracza
             }
         }
     }
 
-
     public static void main(String[] args) {
         try {
-            new SerwerGry().start();
+            new SerwerGry().start(); // Uruchomienie serwera
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

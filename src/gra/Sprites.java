@@ -16,13 +16,13 @@ public class Sprites
 
     public static void load() throws IOException
     {
-        spriteSheet = ImageIO.read(Sprites.class.getResource("/sprites.png"));
+ spriteSheet = ImageIO.read(Sprites.class.getResource("/sprites.png"));
 
-        leci1 = spriteSheet.getSubimage(0,0,128,128);
-        leci2 = spriteSheet.getSubimage(128,0,128,128);
-        spada = spriteSheet.getSubimage(0,128,128,128);
-        celownik = spriteSheet.getSubimage(128,128,128,128);
+ leci1 = spriteSheet.getSubimage(0,0,128,128);
+ leci2 = spriteSheet.getSubimage(128,0,128,128);
+ spada = spriteSheet.getSubimage(0,128,128,128);
+ celownik = spriteSheet.getSubimage(128,128,128,128);
 
-        tlo = ImageIO.read(Sprites.class.getResource("/tlo.png"));
+ tlo = ImageIO.read(Sprites.class.getResource("/tlo.png"));
     }
 }
