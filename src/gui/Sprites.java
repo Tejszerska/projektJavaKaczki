@@ -1,4 +1,4 @@
-package gra;
+package gui;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

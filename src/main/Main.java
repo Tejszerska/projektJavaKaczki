@@ -1,6 +1,6 @@
 package main;
 
-import gra.Sprites;
+import gui.Sprites;
 import gui.OknoGry;
 
 import java.io.IOException;

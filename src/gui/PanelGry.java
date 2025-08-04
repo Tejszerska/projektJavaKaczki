@@ -1,6 +1,5 @@
 package gui;
 
-import gra.Sprites;
 import siec.DaneKaczki;
 import siec.KlientGry;
 import siec.StanGry;

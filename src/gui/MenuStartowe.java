@@ -1,7 +1,5 @@
 package gui;
 
-import gra.Sprites;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
