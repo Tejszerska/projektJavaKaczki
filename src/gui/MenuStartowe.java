@@ -9,13 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Panel startowy gry, który pozwala:
- * - wpisać imię gracza,
- * - rozpocząć grę,
- * - wyświetlić historię wyników z pliku CSV,
- * - zakończyć program.
- */
 public class MenuStartowe extends JPanel {
     private OknoGry okno;
     private JTextField poleImie;

@@ -11,8 +11,8 @@ public class DaneStrzalu implements Serializable {
     public int y; // Współrzędna Y miejsca kliknięcia
 
     public DaneStrzalu(int graczId, int x, int y) {
- this.graczId = graczId;
- this.x = x;
- this.y = y;
+        this.graczId = graczId;
+        this.x = x;
+        this.y = y;
     }
 }
