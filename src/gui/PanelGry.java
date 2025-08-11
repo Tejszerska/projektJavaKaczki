@@ -68,7 +68,7 @@ public class PanelGry extends JPanel implements MouseMotionListener {
         this.wynik1 = stan.wynikGracza1;
         this.wynik2 = stan.wynikGracza2;
 
-        repaint(); // odśwież ekran
+        repaint(); // odśwież ekranbbb
 
 
         if (stan.graZakonczona && !graZakonczona) {
