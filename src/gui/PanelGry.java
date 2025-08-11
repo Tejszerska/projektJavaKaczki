@@ -70,6 +70,7 @@ public class PanelGry extends JPanel implements MouseMotionListener {
 
         repaint(); // odśwież ekran
 
+
         if (stan.graZakonczona && !graZakonczona) {
             graZakonczona = true;
             long czasZakonczenia = System.currentTimeMillis();
