@@ -23,6 +23,8 @@ public class SerwerGry {
     private final BlockingQueue<DaneStrzalu> kolejkaStrzalow = new LinkedBlockingQueue<>();
     private int wynikGracza1 = 0;
     private int wynikGracza2 = 0;
+    private long wspolnyCzasStartu = 0;
+
     private volatile int gotowiGracze = 0;
     private volatile boolean graRozpoczeta = false;
 
@@ -49,6 +51,7 @@ public class SerwerGry {
             int dx = new Random().nextInt(3) + 1;
             int dy = new Random().nextInt(3) + 1;
             kaczki.add(new DaneKaczki(id, x, y, dx, dy, false, grafika));
+            this.wspolnyCzasStartu = System.currentTimeMillis();
         }
 
         // Główna pętla gry
